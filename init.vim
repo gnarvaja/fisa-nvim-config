@@ -129,12 +129,19 @@ Plug 'neomake/neomake'
 " TODO is it running on save? or when?
 " TODO not detecting errors, just style, is it using pylint?
 
+Plug 'editorconfig/editorconfig-vim'
+"let g:EditorConfig_exec_path = '/usr/bin/editorconfig'
+"let g:EditorConfig_core_mode = 'external_command'
+
 " Relative numbering of lines (0 is the current line)
 " (disabled by default because is very intrusive and can't be easily toggled
 " on/off. When the plugin is present, will always activate the relative
 " numbering every time you go to normal mode. Author refuses to add a setting
 " to avoid that)
-Plug 'myusuf3/numbers.vim'
+"""" Plug 'myusuf3/numbers.vim' - DISABLED
+
+" Typescript
+Plug 'mhartington/nvim-typescript', {'do': './install.sh'}
 
 " Nice icons
 " Plug 'ryanoasis/vim-devicons'
@@ -188,11 +195,20 @@ set wildmode=list:longest
 ca w!! w !sudo tee "%"
 
 " tab navigation mappings
-map tt :tabnew 
-map <M-Right> :tabn<CR>
-imap <M-Right> <ESC>:tabn<CR>
-map <M-Left> :tabp<CR>
-imap <M-Left> <ESC>:tabp<CR>
+map TT :tabnew
+let g:lasttab = 1
+map tt :exe "tabn ".g:lasttab<CR>
+au TabLeave * let g:lasttab = tabpagenr()
+
+map tn :tabn<CR>
+map tp :tabp<CR>
+map tm :tabm
+
+map ts :tab split<CR>
+map <C-S-Right> :tabn<CR>
+imap <C-S-Right> <ESC>:tabn<CR>
+map <C-S-Left> :tabp<CR>
+imap <C-S-Left> <ESC>:tabp<CR>
 
 " when scrolling, keep cursor 3 lines away from screen border
 set scrolloff=3
@@ -244,8 +260,8 @@ autocmd! BufWritePost * Neomake
 " Check code as python3 by default
 let g:neomake_python_python_maker = neomake#makers#ft#python#python()
 let g:neomake_python_flake8_maker = neomake#makers#ft#python#flake8()
-let g:neomake_python_python_maker.exe = 'python3 -m py_compile'
-let g:neomake_python_flake8_maker.exe = 'python3 -m flake8'
+"let g:neomake_python_python_maker.exe = 'python3 -m py_compile'
+"let g:neomake_python_flake8_maker.exe = 'python3 -m flake8'
 
 " Disable error messages inside the buffer, next to the problematic line
 let g:neomake_virtualtext_current_error = 0
@@ -353,6 +369,8 @@ let g:yankring_history_dir = '~/.config/nvim/'
 let g:airline_powerline_fonts = 0
 let g:airline_theme = 'bubblegum'
 let g:airline#extensions#whitespace#enabled = 0
+" Guillo custom
+let g:airline#extensions#tabline#enabled = 1
 
 " to use fancy symbols for airline, uncomment the following lines and use a
 " patched font (more info on docs/fancy_symbols.rst)
@@ -367,6 +385,18 @@ let g:airline#extensions#whitespace#enabled = 0
 "let g:airline_symbols.readonly = '⭤'
 "let g:airline_symbols.linenr = '⭡'
 
+"set mouse=a
+
+let g:neomake_python_enabled_makers = ['flake8']
+
+let @d='Oimport ipdb; ipdb.set_trace()'
+
+autocmd filetype python nnoremap <F5> :w <bar> exec '!python3 '.shellescape('%')<CR>
+
+set pastetoggle=<F12>
+autocmd BufWritePre *.js %s/\s\+$//e
+autocmd BufWritePre *.py %s/\s\+$//e
+autocmd BufWritePre *.java %s/\s\+$//e
 
 " Custom configurations ----------------
 
